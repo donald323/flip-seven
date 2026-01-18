@@ -26,6 +26,12 @@ class GameController:
         
         # Add modifier cards (one of each)
         self.deck.extend(['+2', '+4', '+6', '+8', '+10', 'x2'])
+        
+        # Add action cards (three of each)
+        self.deck.extend(['FREEZE', 'FREEZE', 'FREEZE'])
+        self.deck.extend(['FLIP3', 'FLIP3', 'FLIP3'])
+        self.deck.extend(['SECOND_CHANCE', 'SECOND_CHANCE', 'SECOND_CHANCE'])
+        
         random.shuffle(self.deck)
     
     def _reshuffle_if_needed(self):
