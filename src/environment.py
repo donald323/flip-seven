@@ -96,7 +96,7 @@ class Flip7Environment:
             if not target_player.is_active():
                 # Target is no longer active (busted, flip_7, or stayed)
                 # If they busted and we haven't drawn all 3 cards yet, select new target
-                if target_player.round_status == "busted" and total_cards < 3:
+                if target_player.round_status == "busted":
                     # Get remaining active opponents (excluding current busted player)
                     remaining_opponents = {}
                     for p_id, p in enumerate(self.game.players):
