@@ -204,23 +204,23 @@ class Strategy:
         if player.second_chance_count == 0:
             return ('keep', None)  # Keep it - don't have one yet
         
-        if player.second_chance_count >= 1:
-            # Give to opponent with SMALLEST hand (waste it on safe players)
-            # Only consider opponents who don't have second chance yet
-            candidates = {opp_id: opp for opp_id, opp in opponents.items() if opp.second_chance_count == 0}
-            
-            if not candidates:
-                # All opponents have SC, must discard
-                return ('discard', None)
-            
-            min_hand_value = float('inf')
-            target = None
-            for opp_id, opp in candidates.items():
-                hand_value = sum([c for c in opp.current_hand if isinstance(c, int)])
-                if hand_value < min_hand_value:
-                    min_hand_value = hand_value
-                    target = opp_id
-            return ('give', target)
+        # At this point, not all players have SC and player.second_chance_count > 0
+        # Give to opponent with SMALLEST hand (waste it on safe players)
+        # Only consider opponents who don't have second chance yet
+        candidates = {opp_id: opp for opp_id, opp in opponents.items() if opp.second_chance_count == 0}
+        
+        if not candidates:
+            # All opponents have SC, must discard
+            return ('discard', None)
+        
+        min_hand_value = float('inf')
+        target = None
+        for opp_id, opp in candidates.items():
+            hand_value = sum([c for c in opp.current_hand if isinstance(c, int)])
+            if hand_value < min_hand_value:
+                min_hand_value = hand_value
+                target = opp_id
+        return ('give', target)
         
         return ('keep', None)
 
