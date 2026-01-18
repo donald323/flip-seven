@@ -140,19 +140,23 @@ class Player:
         number_cards = [card for card in self.current_hand if isinstance(card, int)]
         modifier_cards = [card for card in self.current_hand if isinstance(card, str)]
         
-        # Sum number cards
+        # Scoring rules:
+        # 1. Sum all number cards.
+        # 2. If an 'x2' card is present, it doubles ONLY the sum of number cards.
+        # 3. All '+N' modifier cards are then added on top of this (they are NOT doubled).
+        # 4. The Flip 7 bonus is also added after these steps (and is NOT affected by 'x2').
         base_score = sum(number_cards)
         
-        # Apply x2 multiplier if present
+        # Apply x2 multiplier to the sum of number cards if present
         if 'x2' in modifier_cards:
             base_score *= 2
         
-        # Add +N modifiers
+        # Add +N modifiers (not multiplied by x2)
         for modifier in modifier_cards:
             if modifier.startswith('+'):
                 base_score += int(modifier[1:])
         
-        # Add Flip 7 bonus
+        # Add Flip 7 bonus (not multiplied by x2)
         if self.round_status == "flip_7":
             base_score += 15
         
