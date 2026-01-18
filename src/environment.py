@@ -71,7 +71,7 @@ class Flip7Environment:
     
     def _handle_flip3_card(self, player):
         """Handle Flip Three action card. FLIP3 must be used when drawn.
-        If target busts before all 3 cards are drawn, they select another active player to continue."""
+        If target busts or achieves Flip 7 during FLIP3, drawing stops immediately."""
         opponents = self._get_opponents_dict(player)
         
         # Use strategy to decide initial target (opponent or self)
@@ -85,54 +85,24 @@ class Flip7Environment:
         else:
             target_player = player  # Default to self
         
-        # Draw 3 cards total (newest first = stack behavior)
-        # If target busts, they select next target
+        # Draw up to 3 cards for target
         cards_drawn = []
-        targets_hit = [(target_player.name, 0)]  # Track (player_name, cards_drawn_count)
-        total_cards = 0
         
-        while total_cards < 3:
-            # Draw one card for current target
+        for _ in range(3):
+            # Stop if target is no longer active (busted, flip_7, or stayed)
             if not target_player.is_active():
-                # Target is no longer active (busted, flip_7, or stayed)
-                # If they busted and we haven't drawn all 3 cards yet, select new target
-                if target_player.round_status == "busted":
-                    # Get remaining active opponents (excluding current busted player)
-                    remaining_opponents = {}
-                    for p_id, p in enumerate(self.game.players):
-                        if p.name != target_player.name and p.is_active():
-                            remaining_opponents[p_id] = p
-                    
-                    if not remaining_opponents:
-                        # No more active players
-                        break
-                    
-                    # Busted player uses strategy to select new target
-                    new_target_id = target_player.strategy.decide_flip3_target(target_player, remaining_opponents)
-                    
-                    if new_target_id is not None and new_target_id < len(self.game.players):
-                        target_player = self.game.players[new_target_id]
-                        targets_hit.append((target_player.name, 0))
-                    else:
-                        # No valid target
-                        break
-                else:
-                    # Flip 7 or stayed - stop drawing
-                    break
+                break
             
-            # Draw card for current target
             card = self.game.deal_card_to_player(target_player)
             if card is not None:
                 cards_drawn.append(card)
-                targets_hit[-1] = (targets_hit[-1][0], targets_hit[-1][1] + 1)
-                total_cards += 1
         
         self._log_action("flip3_card", {
             "player": player.name,
-            "initial_target": targets_hit[0][0],
-            "targets": targets_hit,
+            "target": target_player.name,
             "cards_drawn": cards_drawn,
-            "total_cards": total_cards
+            "total_cards": len(cards_drawn),
+            "target_status": target_player.get_status_display()
         })
     
     def _handle_second_chance_card(self, player):
@@ -233,7 +203,11 @@ class Flip7Environment:
                     })
                 else:
                     # Player hits
+                    # Track Second Chance count BEFORE the draw
+                    previous_second_chance_count = player.second_chance_count
+                    
                     card = self.game.player_hit(player.name)
+                    
                     if card is not None:
                         # Handle action cards
                         if card == 'FREEZE':
@@ -243,7 +217,18 @@ class Flip7Environment:
                         elif card == 'SECOND_CHANCE':
                             self._handle_second_chance_card(player)
                         else:
-                            # Regular card
+                            # Regular card was successfully added
+                            # Check if Second Chance was used (count decreased but still active)
+                            second_chance_used = (previous_second_chance_count > player.second_chance_count 
+                                                 and player.is_active())
+                            
+                            if second_chance_used:
+                                self._log_action("second_chance_used", {
+                                    "player": player.name,
+                                    "duplicate_card": card,
+                                    "second_chances_remaining": player.second_chance_count
+                                })
+                            
                             self._log_action("player_hit", {
                                 "player": player.name,
                                 "card_drawn": card,
@@ -251,27 +236,20 @@ class Flip7Environment:
                                 "status": player.get_status_display()
                             })
                             
-                            # Check for special outcomes
-                            if player.round_status == "busted":
-                                # Check if Second Chance was used
-                                if card in player.current_hand[:-1]:  # Duplicate but not in hand
-                                    self._log_action("second_chance_used", {
-                                        "player": player.name,
-                                        "duplicate_card": card,
-                                        "second_chances_remaining": player.second_chance_count
-                                    })
-                                else:
-                                    self._log_action("player_busted", {
-                                        "player": player.name,
-                                        "duplicate_card": card,
-                                        "final_hand": player.current_hand.copy()
-                                    })
-                            elif player.round_status == "flip_7":
+                            # Check for Flip 7
+                            if player.round_status == "flip_7":
                                 self._log_action("flip_7_achieved", {
                                     "player": player.name,
                                     "winning_hand": player.current_hand.copy(),
                                     "bonus_points": 15
                                 })
+                    else:
+                        # card is None means player busted (add_card returned False)
+                        self._log_action("player_busted", {
+                            "player": player.name,
+                            "duplicate_card": player.current_hand[-1] if player.current_hand else "unknown",
+                            "final_hand": player.current_hand.copy()
+                        })
         
         # End round and calculate scores
         # Capture final hands before round ends
