@@ -154,7 +154,11 @@ class Player:
         # Add +N modifiers (not multiplied by x2)
         for modifier in modifier_cards:
             if modifier.startswith('+'):
-                base_score += int(modifier[1:])
+                try:
+                    base_score += int(modifier[1:])
+                except ValueError:
+                    # Ignore malformed +N modifiers
+                    continue
         
         # Add Flip 7 bonus (not multiplied by x2)
         if self.round_status == "flip_7":
