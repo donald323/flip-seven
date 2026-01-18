@@ -1,6 +1,52 @@
 import random
 
 
+def calculate_hand_score(hand, include_flip7_bonus=False, is_busted=False):
+    """Calculate the score for a given hand.
+    
+    Args:
+        hand: List of cards (integers and/or string modifiers like 'x2', '+5')
+        include_flip7_bonus: Whether to add the Flip 7 bonus (15 points)
+        is_busted: If True, returns 0 regardless of hand
+        
+    Returns:
+        int: The calculated score
+        
+    Scoring rules:
+    1. Sum all number cards.
+    2. If an 'x2' card is present, it doubles ONLY the sum of number cards.
+    3. All '+N' modifier cards are then added on top (NOT doubled).
+    4. The Flip 7 bonus is added after these steps (NOT affected by 'x2').
+    """
+    if is_busted:
+        return 0
+    
+    # Separate number cards from modifier cards
+    number_cards = [card for card in hand if isinstance(card, int)]
+    modifier_cards = [card for card in hand if isinstance(card, str)]
+    
+    # Sum number cards
+    score = sum(number_cards)
+    
+    # Apply x2 multiplier to number cards if present
+    if 'x2' in modifier_cards:
+        score *= 2
+    
+    # Add +N modifiers (not multiplied by x2)
+    for modifier in modifier_cards:
+        if modifier.startswith('+'):
+            try:
+                score += int(modifier[1:])
+            except ValueError:
+                continue
+    
+    # Add Flip 7 bonus if applicable
+    if include_flip7_bonus:
+        score += 15
+    
+    return score
+
+
 class Strategy:
     """Base strategy class for Flip 7 game decisions."""
     
@@ -24,19 +70,10 @@ class Strategy:
             
         if parameters is None:
             # Default strategy: stay if score is high or hand is getting risky
-            # Separate number cards from modifier cards
-            number_cards = [card for card in player_hand if isinstance(card, int)]
-            modifier_cards = [card for card in player_hand if isinstance(card, str)]
-            
-            # Calculate score with modifiers
-            current_score = sum(number_cards)
-            if 'x2' in modifier_cards:
-                current_score *= 2
-            for modifier in modifier_cards:
-                if modifier.startswith('+'):
-                    current_score += int(modifier[1:])
+            current_score = calculate_hand_score(player_hand)
             
             # Hand size based only on number cards
+            number_cards = [card for card in player_hand if isinstance(card, int)]
             hand_size = len(number_cards)
             
             # Stay conditions:
@@ -53,19 +90,10 @@ class Strategy:
             return random.random() < stay_probability
         
         # Parameterized strategy
-        # Separate number cards from modifier cards
-        number_cards = [card for card in player_hand if isinstance(card, int)]
-        modifier_cards = [card for card in player_hand if isinstance(card, str)]
-        
-        # Calculate score with modifiers
-        current_score = sum(number_cards)
-        if 'x2' in modifier_cards:
-            current_score *= 2
-        for modifier in modifier_cards:
-            if modifier.startswith('+'):
-                current_score += int(modifier[1:])
+        current_score = calculate_hand_score(player_hand)
         
         # Hand size and high-value checks based only on number cards
+        number_cards = [card for card in player_hand if isinstance(card, int)]
         hand_size = len(number_cards)
         high_value_cards = [card for card in number_cards if card >= parameters.get('high_value_threshold', 8)]
         
@@ -133,38 +161,9 @@ class Player:
     
     def calculate_round_score(self):
         """Calculate the score for the current round."""
-        if self.round_status == "busted":
-            return 0
-        
-        # Separate number cards from modifier cards
-        number_cards = [card for card in self.current_hand if isinstance(card, int)]
-        modifier_cards = [card for card in self.current_hand if isinstance(card, str)]
-        
-        # Scoring rules:
-        # 1. Sum all number cards.
-        # 2. If an 'x2' card is present, it doubles ONLY the sum of number cards.
-        # 3. All '+N' modifier cards are then added on top of this (they are NOT doubled).
-        # 4. The Flip 7 bonus is also added after these steps (and is NOT affected by 'x2').
-        base_score = sum(number_cards)
-        
-        # Apply x2 multiplier to the sum of number cards if present
-        if 'x2' in modifier_cards:
-            base_score *= 2
-        
-        # Add +N modifiers (not multiplied by x2)
-        for modifier in modifier_cards:
-            if modifier.startswith('+'):
-                try:
-                    base_score += int(modifier[1:])
-                except ValueError:
-                    # Ignore malformed +N modifiers
-                    continue
-        
-        # Add Flip 7 bonus (not multiplied by x2)
-        if self.round_status == "flip_7":
-            base_score += 15
-        
-        return base_score
+        is_flip7 = self.round_status == "flip_7"
+        is_busted = self.round_status == "busted"
+        return calculate_hand_score(self.current_hand, include_flip7_bonus=is_flip7, is_busted=is_busted)
     
     def end_round(self):
         """End the round and add points to total score."""
