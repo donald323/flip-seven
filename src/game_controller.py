@@ -1,5 +1,5 @@
 import random
-from player import Player
+from .player import Player
 
 
 class GameController:
@@ -16,13 +16,16 @@ class GameController:
         self._create_deck()
     
     def _create_deck(self):
-        """Create a deck with number cards 0-12, quantities matching their values."""
+        """Create a deck with number cards 0-12, quantities matching their values, plus modifier cards."""
         self.deck = []
         for number in range(13):  # 0 through 12
             if number == 0:
                 self.deck.append(0)  # Only 1 card of value 0
             else:
                 self.deck.extend([number] * number)  # n cards of value n
+        
+        # Add modifier cards (one of each)
+        self.deck.extend(['+2', '+4', '+6', '+8', '+10', 'x2'])
         random.shuffle(self.deck)
     
     def _reshuffle_if_needed(self):

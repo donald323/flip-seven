@@ -4,11 +4,14 @@ A card game simulation framework with AI strategy tournaments. Players draw card
 
 ## Game Rules
 
-- Deck: Cards 0-12, with n copies of value n (e.g., 5 cards of value 5)
+- **Deck**: 
+  - Number cards 0-12, with n copies of value n (e.g., 5 cards of value 5)
+  - Modifier cards: +2, +4, +6, +8, +10, x2 (one of each)
 - Players draw cards one at a time
 - **Bust**: Drawing a duplicate card in your hand (score 0 for round)
 - **Flip 7**: Collecting 7 unique cards (15 point bonus)
 - **Stay**: Stop drawing and bank your hand's total
+- **Scoring**: Sum of number cards × 2 (if x2 present) + modifier bonuses (if +N present)
 - First to 200 points wins
 
 ## Quick Start

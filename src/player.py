@@ -24,14 +24,26 @@ class Strategy:
             
         if parameters is None:
             # Default strategy: stay if score is high or hand is getting risky
-            current_score = sum(player_hand)
-            hand_size = len(player_hand)
+            # Separate number cards from modifier cards
+            number_cards = [card for card in player_hand if isinstance(card, int)]
+            modifier_cards = [card for card in player_hand if isinstance(card, str)]
+            
+            # Calculate score with modifiers
+            current_score = sum(number_cards)
+            if 'x2' in modifier_cards:
+                current_score *= 2
+            for modifier in modifier_cards:
+                if modifier.startswith('+'):
+                    current_score += int(modifier[1:])
+            
+            # Hand size based only on number cards
+            hand_size = len(number_cards)
             
             # Stay conditions:
             # 1. Score is already decent (15+ points)
-            # 2. Hand has 5+ cards (getting risky)
-            # 3. Has high-value cards that might duplicate
-            high_value_cards = [card for card in player_hand if card >= 8]
+            # 2. Hand has 5+ number cards (getting risky)
+            # 3. Has high-value number cards that might duplicate
+            high_value_cards = [card for card in number_cards if card >= 8]
             
             if current_score >= 15 or hand_size >= 5 or len(high_value_cards) >= 2:
                 stay_probability = 0.9
@@ -41,9 +53,21 @@ class Strategy:
             return random.random() < stay_probability
         
         # Parameterized strategy
-        current_score = sum(player_hand)
-        hand_size = len(player_hand)
-        high_value_cards = [card for card in player_hand if card >= parameters.get('high_value_threshold', 8)]
+        # Separate number cards from modifier cards
+        number_cards = [card for card in player_hand if isinstance(card, int)]
+        modifier_cards = [card for card in player_hand if isinstance(card, str)]
+        
+        # Calculate score with modifiers
+        current_score = sum(number_cards)
+        if 'x2' in modifier_cards:
+            current_score *= 2
+        for modifier in modifier_cards:
+            if modifier.startswith('+'):
+                current_score += int(modifier[1:])
+        
+        # Hand size and high-value checks based only on number cards
+        hand_size = len(number_cards)
+        high_value_cards = [card for card in number_cards if card >= parameters.get('high_value_threshold', 8)]
         
         # Check which conditions are enabled
         conditions_met = []
@@ -112,9 +136,31 @@ class Player:
         if self.round_status == "busted":
             return 0
         
-        base_score = sum(self.current_hand)
+        # Separate number cards from modifier cards
+        number_cards = [card for card in self.current_hand if isinstance(card, int)]
+        modifier_cards = [card for card in self.current_hand if isinstance(card, str)]
         
-        # Add Flip 7 bonus
+        # Scoring rules:
+        # 1. Sum all number cards.
+        # 2. If an 'x2' card is present, it doubles ONLY the sum of number cards.
+        # 3. All '+N' modifier cards are then added on top of this (they are NOT doubled).
+        # 4. The Flip 7 bonus is also added after these steps (and is NOT affected by 'x2').
+        base_score = sum(number_cards)
+        
+        # Apply x2 multiplier to the sum of number cards if present
+        if 'x2' in modifier_cards:
+            base_score *= 2
+        
+        # Add +N modifiers (not multiplied by x2)
+        for modifier in modifier_cards:
+            if modifier.startswith('+'):
+                try:
+                    base_score += int(modifier[1:])
+                except ValueError:
+                    # Ignore malformed +N modifiers
+                    continue
+        
+        # Add Flip 7 bonus (not multiplied by x2)
         if self.round_status == "flip_7":
             base_score += 15
         
