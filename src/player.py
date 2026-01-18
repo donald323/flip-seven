@@ -64,6 +64,11 @@ class Strategy:
         Returns:
             bool: True if player should stay, False if they should hit
         """
+        # ALWAYS hit if no number cards yet (100% safe - no duplicates possible)
+        number_cards = [card for card in player_hand if isinstance(card, int)]
+        if len(number_cards) == 0:
+            return False
+        
         # Use instance parameters if no parameters provided
         if parameters is None:
             parameters = self.parameters
@@ -73,7 +78,6 @@ class Strategy:
             current_score = calculate_hand_score(player_hand)
             
             # Hand size based only on number cards
-            number_cards = [card for card in player_hand if isinstance(card, int)]
             hand_size = len(number_cards)
             
             # Stay conditions:
@@ -93,7 +97,6 @@ class Strategy:
         current_score = calculate_hand_score(player_hand)
         
         # Hand size and high-value checks based only on number cards
-        number_cards = [card for card in player_hand if isinstance(card, int)]
         hand_size = len(number_cards)
         high_value_cards = [card for card in number_cards if card >= parameters.get('high_value_threshold', 8)]
         

@@ -161,9 +161,24 @@ class Flip7Environment:
         if not self.game.start_new_round():
             return False
         
-        # Deal initial cards to all players
+        # Deal initial cards to all players - ensure everyone gets at least one card in hand
         for player in self.game.players:
             card = self.game.deal_card_to_player(player)
+            
+            # Handle action cards drawn as first card
+            while card in ['FREEZE', 'FLIP3', 'SECOND_CHANCE']:
+                # Process the action card immediately
+                if card == 'FREEZE':
+                    self._handle_freeze_card(player)
+                elif card == 'FLIP3':
+                    self._handle_flip3_card(player)
+                elif card == 'SECOND_CHANCE':
+                    self._handle_second_chance_card(player)
+                
+                # Draw another card to ensure player has a card in hand
+                card = self.game.deal_card_to_player(player)
+            
+            # Log the regular card that went into hand
             if card is not None:
                 self._log_action("card_dealt", {
                     "player": player.name,
