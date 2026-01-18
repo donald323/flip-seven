@@ -122,6 +122,107 @@ class Strategy:
             stay_probability = parameters.get('low_risk_probability', 0.1)
         
         return random.random() < stay_probability
+    
+    def decide_freeze_target(self, player, opponents):
+        """Decide who to freeze (risk-manipulation strategy).
+        Frozen player is set to 'stayed' status and is no longer active in the round.
+        
+        Args:
+            player: Current player object
+            opponents: Dict of {player_id: player_object} for all other active players
+        
+        Returns:
+            player_id to freeze, or None
+        """
+        # Priority 1: Freeze players WITH Second Chance (lock them with safety net unused)
+        # If multiple have Second Chance, choose the one with smallest hand value
+        players_with_sc = {opp_id: opp for opp_id, opp in opponents.items() if opp.second_chance_count > 0}
+        
+        if players_with_sc:
+            min_hand_value = float('inf')
+            target = None
+            for opp_id, opp in players_with_sc.items():
+                hand_value = sum([c for c in opp.current_hand if isinstance(c, int)])
+                if hand_value < min_hand_value:
+                    min_hand_value = hand_value
+                    target = opp_id
+            return target
+        
+        # Priority 2: Freeze player with smallest hand value (deny safe progress)
+        min_hand_value = float('inf')
+        target = None
+        for opp_id, opp in opponents.items():
+            hand_value = sum([c for c in opp.current_hand if isinstance(c, int)])
+            if hand_value < min_hand_value:
+                min_hand_value = hand_value
+                target = opp_id
+        
+        return target
+    
+    def decide_flip3_target(self, player, opponents):
+        """Decide who to use Flip Three on (risk-manipulation strategy).
+        FLIP3 must be used when drawn - this only decides the target.
+        
+        Args:
+            player: Current player object
+            opponents: Dict of {player_id: player_object} for all other active players
+        
+        Returns:
+            target_player_id (opponent) or None (for self)
+        """
+        # Target players with HIGH hand values (likely to bust on 3 forced draws)
+        max_hand_value = 0
+        target = None
+        
+        if opponents:
+            for opp_id, opp in opponents.items():
+                hand_value = sum([c for c in opp.current_hand if isinstance(c, int)])
+                if hand_value > max_hand_value:
+                    max_hand_value = hand_value
+                    target = opp_id
+            return target
+        
+        return None  # Use on self
+    
+    def decide_second_chance_giveaway(self, player, opponents):
+        """Decide whether to give away Second Chance (risk-manipulation strategy).
+        
+        Args:
+            player: Current player object
+            opponents: Dict of {player_id: player_object} for all other active players
+        
+        Returns:
+            (action: str, target_player_id or None)
+            action can be: 'keep', 'give', or 'discard'
+        """
+        # Check if all active players (including self) already have second chance
+        all_have_sc = player.second_chance_count > 0 and all(opp.second_chance_count > 0 for opp in opponents.values())
+        
+        if all_have_sc:
+            return ('discard', None)  # All players have SC, must discard
+        
+        if player.second_chance_count == 0:
+            return ('keep', None)  # Keep it - don't have one yet
+        
+        if player.second_chance_count >= 1:
+            # Give to opponent with SMALLEST hand (waste it on safe players)
+            # Only consider opponents who don't have second chance yet
+            candidates = {opp_id: opp for opp_id, opp in opponents.items() if opp.second_chance_count == 0}
+            
+            if not candidates:
+                # All opponents have SC, must discard
+                return ('discard', None)
+            
+            min_hand_value = float('inf')
+            target = None
+            for opp_id, opp in candidates.items():
+                hand_value = sum([c for c in opp.current_hand if isinstance(c, int)])
+                if hand_value < min_hand_value:
+                    min_hand_value = hand_value
+                    target = opp_id
+            return ('give', target)
+        
+        return ('keep', None)
 
 
 class Player:
@@ -133,21 +234,33 @@ class Player:
         self.current_hand = []
         self.round_status = "active"  # "active", "stayed", "busted"
         self.strategy = strategy if strategy is not None else Strategy()
+        self.second_chance_count = 0
     
     def add_card(self, card):
         """Add a card to the player's current hand."""
         if self.round_status != "active":
             return False
+        
+        # Action cards are handled separately, not added to hand
+        if card in ['FREEZE', 'FLIP3', 'SECOND_CHANCE']:
+            return True  # Action cards trigger effects but don't go in hand
             
         if card in self.current_hand:
-            self.round_status = "busted"
-            self.current_hand.append(card)
-            return False
+            # Check for Second Chance
+            if self.second_chance_count > 0:
+                self.second_chance_count -= 1
+                # Don't add duplicate card, don't bust
+                return True  # Second Chance used successfully
+            else:
+                self.round_status = "busted"
+                self.current_hand.append(card)
+                return False
         
         self.current_hand.append(card)
         
-        # Check for Flip 7 (7 unique cards)
-        if len(self.current_hand) == 7:
+        # Check for Flip 7 (7 unique number cards)
+        number_cards = [c for c in self.current_hand if isinstance(c, int)]
+        if len(number_cards) == 7:
             self.round_status = "flip_7"
         
         return True
@@ -173,6 +286,7 @@ class Player:
         # Reset for next round
         self.current_hand = []
         self.round_status = "active"
+        self.second_chance_count = 0
         
         return round_score
     
