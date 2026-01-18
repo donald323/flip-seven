@@ -62,8 +62,8 @@ Strategies decide when to stay based on three conditions:
 When action cards are drawn, strategies make optimal decisions:
 
 **FREEZE Decision**:
-- Priority 1: Freeze players WITH Second Chance (prevents safe progress)
-- Priority 2: Among those, freeze player with SMALLEST hand value
+- Priority 1: Freeze players WITH Second Chance (if multiple, choose SMALLEST hand value)
+- Priority 2: Otherwise, freeze player with SMALLEST hand value
 - Purpose: Deny safe scoring opportunities
 
 **FLIP3 Decision**:
