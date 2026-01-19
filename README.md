@@ -53,10 +53,12 @@ jupyter notebook notebooks/championship_notebook.ipynb
 ## Strategy System
 
 ### Hit/Stay Decisions
-Strategies decide when to stay based on three conditions:
-- **Score threshold**: Stay at target score (10/15/20/25/30)
-- **Hand size limit**: Stay at card count (3/4/5/6/7)
+Strategies use deterministic rules to decide when to stay based on three conditions:
+- **Score threshold**: Stay when reaching target score (10/15/20/25/30)
+- **Hand size limit**: Stay when reaching card count (3/4/5/6/7)
 - **High-value cards**: Stay when holding risky cards (≥6/7/8/9/10)
+
+A player will **stay** if **any** enabled condition is met, otherwise they will **hit**.
 
 ### Action Card Decisions (Risk-Manipulation Strategy)
 When action cards are drawn, strategies make optimal decisions:

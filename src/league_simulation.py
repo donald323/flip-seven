@@ -190,7 +190,7 @@ class LeagueSimulation:
         player_names = [p.name for p in selected_players]
         
         # Create custom environment with minimal logging for performance
-        env = Flip7Environment(player_names, winning_score=200, seed=None, enable_logging=False)
+        env = Flip7Environment(player_names, winning_score=200, seed=self.seed, enable_logging=False)
         
         # Replace the default players with our league players that have strategies
         for i, league_player in enumerate(selected_players):

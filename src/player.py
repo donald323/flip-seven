@@ -86,12 +86,8 @@ class Strategy:
             # 3. Has high-value number cards that might duplicate
             high_value_cards = [card for card in number_cards if card >= 8]
             
-            if current_score >= 15 or hand_size >= 5 or len(high_value_cards) >= 2:
-                stay_probability = 0.9
-            else:
-                stay_probability = 0.1
-            
-            return random.random() < stay_probability
+            # Deterministic: stay if any condition is met
+            return current_score >= 15 or hand_size >= 5 or len(high_value_cards) >= 2
         
         # Parameterized strategy
         current_score = calculate_hand_score(player_hand)
@@ -118,13 +114,8 @@ class Strategy:
             if len(high_value_cards) >= high_value_limit:
                 conditions_met.append('high_value')
         
-        # Determine stay probability based on conditions met
-        if conditions_met:
-            stay_probability = parameters.get('high_risk_probability', 0.9)
-        else:
-            stay_probability = parameters.get('low_risk_probability', 0.1)
-        
-        return random.random() < stay_probability
+        # Deterministic decision: stay if any condition is met
+        return len(conditions_met) > 0
     
     def decide_freeze_target(self, player, opponents):
         """Decide who to freeze (risk-manipulation strategy).

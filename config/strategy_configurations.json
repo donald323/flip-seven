@@ -10,45 +10,35 @@
             "use_score_condition": true,
             "use_hand_size_condition": false,
             "use_high_value_condition": false,
-            "score_threshold": 10,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "score_threshold": 10
           },
           {
             "name": "Moderate Score",
             "use_score_condition": true,
             "use_hand_size_condition": false,
             "use_high_value_condition": false,
-            "score_threshold": 15,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "score_threshold": 15
           },
           {
             "name": "Aggressive Score",
             "use_score_condition": true,
             "use_hand_size_condition": false,
             "use_high_value_condition": false,
-            "score_threshold": 20,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "score_threshold": 20
           },
           {
             "name": "High Score",
             "use_score_condition": true,
             "use_hand_size_condition": false,
             "use_high_value_condition": false,
-            "score_threshold": 25,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "score_threshold": 25
           },
           {
             "name": "Very Aggressive Score",
             "use_score_condition": true,
             "use_hand_size_condition": false,
             "use_high_value_condition": false,
-            "score_threshold": 30,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "score_threshold": 30
           }
         ],
         "hand_size_only": [
@@ -57,45 +47,35 @@
             "use_score_condition": false,
             "use_hand_size_condition": true,
             "use_high_value_condition": false,
-            "hand_size_limit": 4,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "hand_size_limit": 4
           },
           {
             "name": "Moderate Hand Size",
             "use_score_condition": false,
             "use_hand_size_condition": true,
             "use_high_value_condition": false,
-            "hand_size_limit": 5,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "hand_size_limit": 5
           },
           {
             "name": "Aggressive Hand Size",
             "use_score_condition": false,
             "use_hand_size_condition": true,
             "use_high_value_condition": false,
-            "hand_size_limit": 6,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "hand_size_limit": 6
           },
           {
             "name": "Very Conservative Hand Size",
             "use_score_condition": false,
             "use_hand_size_condition": true,
             "use_high_value_condition": false,
-            "hand_size_limit": 3,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "hand_size_limit": 3
           },
           {
             "name": "Very Aggressive Hand Size",
             "use_score_condition": false,
             "use_hand_size_condition": true,
             "use_high_value_condition": false,
-            "hand_size_limit": 7,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "hand_size_limit": 7
           }
         ],
         "high_value_only": [
@@ -105,9 +85,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 7,
-            "high_value_limit": 1,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 1
           },
           {
             "name": "Moderate High Value",
@@ -115,9 +93,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 8,
-            "high_value_limit": 1,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 1
           },
           {
             "name": "Aggressive High Value",
@@ -125,9 +101,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 9,
-            "high_value_limit": 1,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 1
           },
           {
             "name": "Strict High Value",
@@ -135,9 +109,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 6,
-            "high_value_limit": 1,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 1
           },
           {
             "name": "Very Aggressive High Value",
@@ -145,9 +117,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 10,
-            "high_value_limit": 1,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 1
           },
           {
             "name": "Conservative High Value_2",
@@ -155,9 +125,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 7,
-            "high_value_limit": 2,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 2
           },
           {
             "name": "Moderate High Value_2",
@@ -165,9 +133,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 8,
-            "high_value_limit": 2,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 2
           },
           {
             "name": "Aggressive High Value_2",
@@ -175,9 +141,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 9,
-            "high_value_limit": 2,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 2
           },
           {
             "name": "Strict High Value_2",
@@ -185,9 +149,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 6,
-            "high_value_limit": 2,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 2
           },
           {
             "name": "Very Aggressive High Value_2",
@@ -195,9 +157,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 10,
-            "high_value_limit": 2,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 2
           },
           {
             "name": "Conservative High Value_3",
@@ -205,9 +165,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 7,
-            "high_value_limit": 3,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 3
           },
           {
             "name": "Moderate High Value_3",
@@ -215,9 +173,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 8,
-            "high_value_limit": 3,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 3
           },
           {
             "name": "Aggressive High Value_3",
@@ -225,9 +181,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 9,
-            "high_value_limit": 3,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 3
           },
           {
             "name": "Strict High Value_3",
@@ -235,9 +189,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 6,
-            "high_value_limit": 3,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 3
           },
           {
             "name": "Very Aggressive High Value_3",
@@ -245,9 +197,7 @@
             "use_hand_size_condition": false,
             "use_high_value_condition": true,
             "high_value_threshold": 10,
-            "high_value_limit": 3,
-            "high_risk_probability": 0.9,
-            "low_risk_probability": 0.1
+            "high_value_limit": 3
           }
         ]
       }
@@ -259,9 +209,7 @@
       "score_threshold": "Integer: Minimum score to trigger stay condition",
       "hand_size_limit": "Integer: Hand size that triggers stay condition",
       "high_value_threshold": "Integer: Card value considered 'high value' (>= this value)",
-      "high_value_limit": "Integer: Number of high value cards that triggers stay condition",
-      "high_risk_probability": "Float: Probability of staying when high-risk conditions are met (0.9)",
-      "low_risk_probability": "Float: Probability of staying in low risk situations (0.1)"
+      "high_value_limit": "Integer: Number of high value cards that triggers stay condition"
     }
   }
 }

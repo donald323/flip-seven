@@ -93,11 +93,10 @@ class GameController:
             round_score = player.end_round()
             round_results[player.name] = round_score
         
-        # Check for game winner
-        for player in self.players:
-            if player.has_won_game(self.winning_score):
-                self.game_winner = player
-                break
+        # Check for game winner: if any player reached winning score, highest score wins
+        max_score = max(player.total_score for player in self.players)
+        if max_score >= self.winning_score:
+            self.game_winner = max(self.players, key=lambda p: p.total_score)
         
         # Move to next dealer
         self.current_dealer_index = (self.current_dealer_index + 1) % len(self.players)
